@@ -1,0 +1,30 @@
+/*给定两棵二叉树 tree1 和 tree2，判断 tree2 是否以 tree1 的某个节点为根的子树具有 相同的结构和节点值 。
+注意，空树 不会是以 tree1 的某个节点为根的子树具有 相同的结构和节点值 。*/
+class Solution {
+public:
+    bool isSubStructure(TreeNode* A, TreeNode* B) {
+        // 边界条件：如果B为空，根据题意通常认为空树是任何树的子结构
+        // 如果A为空但B不为空，肯定不匹配
+        if (!A || !B) return false;
+        
+        // 三种情况满足任一即可：
+        // 1. 以当前节点为根完全匹配B
+        // 2. 在左子树中匹配B  
+        // 3. 在右子树中匹配B
+        return isMatch(A, B) || isSubStructure(A->left, B) || isSubStructure(A->right, B);
+    }
+    
+private:
+    // 辅助函数：判断以A为根的树是否完全包含B的结构
+    bool isMatch(TreeNode* A, TreeNode* B) {
+        // B为空说明匹配完成
+        if (!B) return true;
+        // A为空但B不为空，匹配失败
+        if (!A) return false;
+        // 值不匹配
+        if (A->val != B->val) return false;
+        
+        // 递归匹配左右子树
+        return isMatch(A->left, B->left) && isMatch(A->right, B->right);
+    }
+};
