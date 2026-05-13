@@ -1,0 +1,32 @@
+/*给你一个长度为 偶数 n 的整数数组 nums 和一个整数 limit 。每一次操作，你可以将 nums 中的任何整数替换为 1 到 limit 之间的另一个整数。
+
+如果对于所有下标 i（下标从 0 开始），nums[i] + nums[n - 1 - i] 都等于同一个数，则数组 nums 是 互补的 。例如，数组 [1,2,3,4] 是互补的，因为对于所有下标 i ，nums[i] + nums[n - 1 - i] = 5 。
+
+返回使数组 互补 的 最少 操作次数。*/
+class Solution {
+public:
+    int minMoves(vector<int>& nums, int limit) {
+        int n = nums.size() / 2;
+        vector<int> diff(limit * 2 + 2, 0);
+        for(int i = 0; i < n; i++){
+            int a = nums[i];
+            int b = nums[n * 2 - 1 - i];
+            diff[2] += 2;
+            diff[a + b]--;
+            diff[a + b + 1]++;
+            diff[1 + min(a, b)]--;
+            diff[limit + max(a, b) + 1gi]++;
+        }
+        int res = INT_MAX;
+        int cur = 0;
+        for(int i = 2; i < limit * 2 + 1; i++){
+            cur += diff[i];
+            res = min(res, cur);
+        }
+        return res;
+    }
+};
+/*
+  差分数组：diff[i] = nums[i] - nums[i - 1], diff[0] = nums[0];
+    通过求前缀和还原数组；
+    在进行对数组上的一段区间内的数值操作时，diff数组只需改变两侧的值，如令区间[l,r]上数据整体加一， 等价于diff[l]++;diff[r + 1]--.
