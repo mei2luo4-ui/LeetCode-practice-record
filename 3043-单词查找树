@@ -1,0 +1,48 @@
+给你两个 正整数 数组 arr1 和 arr2 。
+
+正整数的 前缀 是其 最左边 的一位或多位数字组成的整数。例如，123 是整数 12345 的前缀，而 234 不是 。
+
+设若整数 c 是整数 a 和 b 的 公共前缀 ，那么 c 需要同时是 a 和 b 的前缀。例如，5655359 和 56554 有公共前缀 565 和 5655，而 1223 和 43456 没有 公共前缀。
+
+你需要找出属于 arr1 的整数 x 和属于 arr2 的整数 y 组成的所有数对 (x, y) 之中最长的公共前缀的长度。
+
+返回所有数对之中最长公共前缀的长度。如果它们之间不存在公共前缀，则返回 0 。
+class Solution {
+public:
+    struct trie{
+        trie* children[10] = {nullptr};
+    };
+    int longestCommonPrefix(vector<int>& arr1, vector<int>& arr2) {
+        trie* root = new trie();
+        for(auto num : arr1){
+            string s = to_string(num);
+            trie* node = root;
+            for(auto c : s){
+                int n = c - '0';
+                if(!node -> children[n]){
+                    node -> children[n] = new trie();
+                }
+                node = node -> children[n];
+            }
+        }
+        int res = 0;
+        for(auto num : arr2){
+            string s = to_string(num);
+            int count = 0;
+            trie* node = root;
+            for(auto c : s){
+                int n = c - '0';
+                if(!node -> children[n]){
+                    break;
+                }
+                node = node -> children[n];
+                count++;
+            }
+            res = max(res, count);
+        }
+        return res;
+    }
+};
+单词查找树：定义trie结构，本质是一棵树，结构内含有单字符所有可能的子节点数组，初始设置为空指针，第n层叶节点表示第n个位置上出现过的所有可能字符，根据字典逐层创建子节点
+；判断一个单词s是否存在只需沿root -- root -> children[s[0]] -- root -> children[s[0]] -> children[s[1]]...
+遇到空指针则表示该字符在该位置上未曾出现过，即该单词不存在
