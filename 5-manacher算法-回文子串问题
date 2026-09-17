@@ -1,0 +1,32 @@
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        //预处理，通过添加符号解决奇偶分类问题，首位增加不相同标识符，简化边界处理
+        string t = "…^#";
+        for(char c : s){
+            t += c;
+            t += '#';
+        }
+        t += '$';
+        int n = t.size();
+        vector<int> p(n, 0);
+        int center = 0, right = 0;
+        int max_len = 0, res_idx = 0;
+        for(int i = 1; i < n - 1; i++){
+            //i关于center的对称点，可以保证在回文区间内两对称点至多都有right - 1的对称半径，优化
+            p[i] = right > i ? min(right - i, p[2 * center - i]) : 1;
+            while(t[i + p[i]] == t[i - p[i]]){ //两侧的字符保证了p[i]不会越界，因为一定不相同
+                p[i]++;
+            }
+            if(i + p[i] > right){
+                right = i + p[i];
+                center = i;
+            }
+            if(p[i] > max_len){
+                max_len = p[i];
+                res_idx = i;
+            }
+        }
+        //左边界一定是#， 索引为(idx - len) /2, 长度为#a#b#a# #a#b#b#a#
+        return s.substr((res_idx - max_len) / 2, max_len - 1);
+    }
