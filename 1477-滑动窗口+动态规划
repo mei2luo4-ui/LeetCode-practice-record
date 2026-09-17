@@ -1,0 +1,38 @@
+给你一个整数数组 arr 和一个整数值 target 。
+
+请你在 arr 中找 两个互不重叠的子数组 且它们的和都等于 target 。可能会有多种方案，请你返回满足要求的两个子数组长度和的 最小值 。
+
+请返回满足要求的最小长度和，如果无法找到这样的两个子数组，请返回 -1 。
+
+class Solution {
+public:
+    int minSumOfLengths(vector<int>& arr, int target) {
+        int n = arr.size(), left = 0, right = 0, cur = arr[0], res = INT_MAX;
+        vector<int> maxLen(n, INT_MAX); //maxLen[i]表示包括索引i之前子数组中满足条件的最小长度；
+        if(arr[0] == target) maxLen[0] = 1;
+        while(right < n && left < n){ //左右都闭区间
+            if(cur == target){ //维护maxLen数组，更新答案
+                int len = right - left + 1;
+                if(right > 0) maxLen[right] = min(len, maxLen[right - 1]); // 维护动态数组
+                else maxLen[right] = len;
+                if(left > 0 && maxLen[left - 1] != INT_MAX){
+                    res = min(res, len + maxLen[left - 1]);
+                }
+                //更新窗口
+                cur -= arr[left++];
+            }
+            else if(cur > target){
+                cur -= arr[left++];
+            }
+            else{
+                if(right > 0){
+                    maxLen[right] = min(maxLen[right - 1], maxLen[right]);
+                }
+                right++;
+                if(right < n) cur += arr[right];
+            }
+        }
+        return res == INT_MAX ? -1 : res;
+    }
+};
+
